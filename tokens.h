@@ -17,6 +17,10 @@ typedef enum s_token_type{
     PAREN_L = 7,
     PAREN_R = 8,
     OR = 9,
+    AND = 10,
+    WORDS = 11,
+    HEREDOC = 12,
+    LESS = 13,
 }t_token_type;
 
 typedef struct s_slice{
@@ -26,7 +30,7 @@ typedef struct s_slice{
 
 typedef struct s_token{
     t_token_type type;
-    t_slice *location;
+    t_slice location;
     struct s_token *next;
 }t_token;
 
@@ -45,4 +49,6 @@ t_tree *make_and_cmd(t_tree *left, t_tree *right);
 t_tree *make_or_command(t_tree *left, t_tree *right);
 t_tree *make_great_command(t_tree *left, t_tree *right);
 t_tree *make_exec_command();
+void	*m_alloc(size_t __size, char todo);
+#endif
 

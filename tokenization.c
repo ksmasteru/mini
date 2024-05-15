@@ -1,36 +1,36 @@
 
-#include "minishell.h"
+#include "tokens.h"
 
-e_tok decode_type(char c1, char c2)
+t_token_type decode_type(char c1, char c2)
 {
 	if (c1 == '|' && c2 != '|')
-		return (_PIPE);
+		return (PIPE);
 	else if (c1 == '|' && c2 == '|')
-		return (_OR);
+		return (OR);
 	else if (c1 == '<' && c2 != '<')
-		return (_LESS);
+		return (LESS);
 	else if (c1 == '<' && c2 == '<')
-		return (_HEREDOC);
+		return (HEREDOC);
 	else if (c1 == '>' && c2 != '>')
-		return (_GREAT);
+		return (GREAT);
 	else if (c1 == '>' && c2 == '>')
-		return (_REDIRECT);
+		return (REDIRECT);
 	else if (c1 == '&' && c2!= '&')
-		return (_AMPER);
+		return (AMPER);
 	else if (c1 == '&' && c2 == '&')
-		return (_AND);
+		return (AND);
 	else if (c1 == '(')
-		return (_PAREN_L);
+		return (PAREN_L);
 	else if (c1 == ')')
-		return (_PAREN_R);
-	return (_WORD);
+		return (PAREN_R);
+	return (WORD);
 }
 
-t_token	*make_new_node(e_tok type, char *start, size_t length)
+t_token	*make_new_node(t_token_type type, char *start, size_t length)
 {
 	t_token *new;
 
-	new = m_alloc(sizeof(t_token), ALLOC);
+	new = malloc(sizeof(t_token));
 	if (!new)
 		exit(EXIT_FAILURE);
 	new->type = type;
@@ -41,15 +41,15 @@ t_token	*make_new_node(e_tok type, char *start, size_t length)
 
 int	add_op_token(t_token **head, int c1, int c2, char *start)
 {
-	e_tok			type;
+	t_token_type			type;
 	t_token         *new;
 	t_token         *last;
 	size_t          length;
 
 	last = *head;
 	type = decode_type(c1, c2);
-	length = (1 * (type == _HEREDOC || type == _AND \
-		|| type == _OR || type == _REDIRECT)) + 1;
+	length = (1 * (type == HEREDOC || type == AND \
+		|| type == OR || type == REDIRECT)) + 1;
 	if (!*head)
 	{
 		*head = make_new_node(type, start, length);
@@ -66,17 +66,17 @@ int	add_op_token(t_token **head, int c1, int c2, char *start)
 
 void	add_word_token(t_token **head, char *start, size_t word$ize)
 {
-	e_tok			type;
+	t_token_type			type;
 	t_token         *new;
 	t_token         *last;
 
 	last = *head;
 	if (!*head)
 	{
-		*head = make_new_node(_WORD, start, word$ize);
+		*head = make_new_node(WORD, start, word$ize);
 		return ;
 	}
-	new = make_new_node(_WORD, start, word$ize);
+	new = make_new_node(WORD, start, word$ize);
 	if (!new)
 		exit(EXIT_FAILURE);
 	while (last->next)
@@ -120,7 +120,6 @@ t_token  *lexer(char *input)
 
  int main(int ac, char **av)
  {
-
  	char *input;
  	if (ac != 2)
  		return (0);
@@ -129,6 +128,6 @@ t_token  *lexer(char *input)
  	t_token *tmp;
 
  	tokens = lexer(input);
- 	tokens = lexer_v2(tokens);
-    parser(tokens);
+	tokens_v2(tokens);
+	
  }

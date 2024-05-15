@@ -19,13 +19,7 @@ typedef struct s_gc
 	struct s_gc	*next;
 }				t_gc;
 
-
-typedef struct	s_tree
-{
-	int data;
-	struct s_tree *lisr;
-	struct s_tree *limn;
-}				t_tree;
+z
 
 void	*m_alloc(size_t __size, char todo);
 
