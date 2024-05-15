@@ -21,17 +21,20 @@ typedef enum s_token_type{
     WORDS = 11,
     HEREDOC = 12,
     LESS = 13,
+    FILE_NAME = 14,
 }t_token_type;
 
 typedef struct s_slice{
     char *location;
     size_t lenght;
+    struct s_slice *next;
 }t_slice;
 
 typedef struct s_token{
     t_token_type type;
     t_slice location;
     struct s_token *next;
+    struct s_token *up;
 }t_token;
 
 typedef struct s_tree{
@@ -49,6 +52,8 @@ t_tree *make_and_cmd(t_tree *left, t_tree *right);
 t_tree *make_or_command(t_tree *left, t_tree *right);
 t_tree *make_great_command(t_tree *left, t_tree *right);
 t_tree *make_exec_command();
+void    tokens_v2(t_token **tokens);
 void	*m_alloc(size_t __size, char todo);
+void merge_words(t_token **current, t_token **next);
+void token_overdrive(t_token **tokens);
 #endif
-
