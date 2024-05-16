@@ -1,6 +1,3 @@
-#ifndef "TOKENS_h"
-#define "TOKENS_H"
-
 
 #include "minishell.h"
 #include <stdbool.h>

@@ -19,8 +19,5 @@ typedef struct s_gc
 	struct s_gc	*next;
 }				t_gc;
 
-z
-
-void	*m_alloc(size_t __size, char todo);
 
 #endif /*	MINISHELL_H	*/

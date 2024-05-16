@@ -1,20 +1,25 @@
 #include "tokens.h"
-
-t_token_type decode_type(int c)
+#include "parser.h"
+t_token_type decode_type(char *start, int c)
 {
     t_token_type type;
 
     if (c == '|')
-        type = PIPE;
-    else if (c == '<' || c == '>')
-        type = REDIRECT;
+        return  PIPE;
+    else if (c == '<' && *(start + 1) == '<')
+        return (GREATGREAT);
+    else if (c == '<')
+        return (GREAT);
+    else if (c == '>' && *(start + 1) == '>')
+        return (HEREDOC);
+    else if (c == '>')
+        return (LESS);
     else if (c == '(')
-        type = PAREN_L;
+        return (PAREN_L);
     else if (c == ')')
-        type = PAREN_R;
+        return (PAREN_R);
     else
-        type = WORD;
-    return (type);
+        return (WORD);
 }
 
 t_token *make_new_node(t_token_type type, char *start, size_t length)
@@ -37,7 +42,7 @@ void add_new_token(t_token **head , int c, char *start, size_t length)
     t_token *new;
 
     tmp = *head;
-    t_token_type type = decode_type(c);
+    t_token_type type = decode_type(start, c);
     if (*head == NULL)
     {
         *head = make_new_node(type, start, length);
@@ -68,9 +73,9 @@ t_token  *lexer(char *str)
         start = str;
         if(*str && strchr("|<>()", *str))
         {
-            add_new_token(&head, *str, start, 1);
+            add_new_token(&head, *str, start, 1); //need more paramters.
             str = str + 1;
-            start = str;   
+            start = str;
         }
         while (*str && !(strchr(" \t\v\r|><)(", *str)))
         {
@@ -93,21 +98,9 @@ int main(int ac, char **av)
     str = av[1];
     t_token *tokens;
     t_token *tmp;
-
+    t_token *tempo;
     char limiter[] = {"|<>()"};
     tokens = lexer(str);
-    tmp = tokens;
-    while (tmp != NULL)
-    {
-        printf("token type is %d and its lenght is %d\n", tmp->type, tmp->location.lenght);
-        tmp = tmp->next;
-    }
 	tokens_v2(&tokens);
-	printf("after token v2 \n");
-	tmp = tokens;
-	while (tmp != NULL)
-    {
-        printf("token type is %d and its lenght is %d\n", tmp->type, tmp->location.lenght);
-        tmp = tmp->next;
-    }
+    t_tree *root = parser(tokens);
 }

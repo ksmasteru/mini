@@ -12,7 +12,6 @@ typedef enum s_token_type{
     SPECIAL = 2,
     PIPE = 3,
     AMPER = 4,
-    REDIRECT = 5,
     GREAT = 6,
     PAREN_L = 7,
     PAREN_R = 8,
@@ -22,6 +21,7 @@ typedef enum s_token_type{
     HEREDOC = 12,
     LESS = 13,
     FILE_NAME = 14,
+    GREATGREAT = 15,
 }t_token_type;
 
 typedef struct s_slice{
@@ -38,7 +38,7 @@ typedef struct s_token{
 }t_token;
 
 typedef struct s_tree{
-    t_token *cmd;
+    t_token *token;
     struct s_tree *left;
     struct s_tree *right;
 }t_tree;

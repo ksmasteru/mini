@@ -18,12 +18,14 @@ void merge_words(t_token **current, t_token **next)
 }
 
 // "hello wrold lol | daspipee | another big fucking pipe"
+
+//"will handle redirections later"
 void tokens_v2(t_token **tokens)
 {
     t_token *new;
     t_token *tmp;
 
-    tmp = *tokens;
+    tmp = *tokens;  
     while (tmp)
     {
         /*join words*/
@@ -34,8 +36,11 @@ void tokens_v2(t_token **tokens)
                 merge_words(&tmp, &(tmp->next));
                 continue;
             }
-            else
-                tmp = tmp->next;
+            else if (tmp->type == LESS && tmp->next->type == WORD)
+                tmp->next->type = FILE_NAME;
+            else if (tmp->type == HEREDOC && tmp->next->type == WORD)
+                tmp->next->type = FILE_NAME; // will be handled later
+            tmp = tmp->next;
         }
         else
             tmp = tmp->next;
