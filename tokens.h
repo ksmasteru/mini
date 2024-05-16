@@ -38,10 +38,16 @@ typedef struct s_token{
 }t_token;
 
 typedef struct s_tree{
+    t_token_type type;
     t_token *token;
     struct s_tree *left;
     struct s_tree *right;
 }t_tree;
+
+typedef struct s_queue{
+    t_tree *addr;
+    struct s_queue *next;
+}t_queue;
 
 
 t_token *make_new_node(t_token_type type, char *start, size_t length);
@@ -56,4 +62,5 @@ void    tokens_v2(t_token **tokens);
 void	*m_alloc(size_t __size, char todo);
 void merge_words(t_token **current, t_token **next);
 void token_overdrive(t_token **tokens);
+void left_root_right(t_tree **root);
 #endif

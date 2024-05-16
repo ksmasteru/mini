@@ -98,9 +98,29 @@ int main(int ac, char **av)
     str = av[1];
     t_token *tokens;
     t_token *tmp;
-    t_token *tempo;
+    t_tree *temp;
+    t_tree *tempo;
     char limiter[] = {"|<>()"};
     tokens = lexer(str);
 	tokens_v2(&tokens);
+    tmp = tokens;
     t_tree *root = parser(tokens);
+    tempo = root;
+    /*while (tempo != NULL)
+    {
+        printf("tree type is %d\n", tempo->type);
+        printf("temp left is %d\n", tempo->left->type);
+        printf("temp right is %d\n", tempo->right->type);
+        tempo = tempo->left;
+        printf("down level left\n");
+        printf("tree type is %d\n", tempo->type);
+        printf("temp left type is %d\n", tempo->left->type);
+        printf("temp right type is %d\n", tempo->right->type);
+        
+        break;
+    }*/
+    //bfs(&root);
+    //pre_order_traversal(&root);
+    left_root_right(&root);
+    
 }

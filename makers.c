@@ -8,6 +8,7 @@ t_tree *make_pipe_cmd(t_tree *left, t_tree *right)
     new = malloc(sizeof(t_tree));
     if (!new)
         return (NULL);
+    new->type = PIPE;
     new->token = NULL;
     new->left = left;
     new->right = right;
@@ -21,6 +22,7 @@ t_tree *make_and_new(t_tree *left, t_tree *right)
     new = malloc(sizeof(t_tree));
     if (!new)
         return (NULL);
+    new->type = AND;
     new->token = NULL;
     new->left = left;
     new->right = right;
@@ -34,6 +36,7 @@ t_tree *make_or_command(t_tree *left, t_tree *right)
     new = malloc(sizeof(t_tree));
     if (!new)
         return (NULL);
+    new->type = OR;
     new->token = NULL;
     new->left = left;
     new->right = right;
@@ -47,6 +50,7 @@ t_tree *make_great_command(t_tree *left, t_tree *right)
     new = malloc(sizeof(t_tree));
     if (!new)
         return (NULL);
+    new->type = GREAT;
     new->token = NULL;
     new->left = left;
     new->right = right;
@@ -61,7 +65,8 @@ t_tree *make_exec_command(t_token *word)
     new = malloc(sizeof(t_tree));
     if (!new)
         return (NULL);
-    new->token = word;
+    new->type = WORD;
+    new->token = NULL;
     new->left = NULL;
     new->right = NULL;
     return (new);
