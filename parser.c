@@ -20,10 +20,12 @@ t_tree *parse_word(t_token **head)
     t_token *tmp;
 
     tmp = (*head)->next;
+    printf("tmp value is %p\n", tmp);
     /*char *buffer = (char *)malloc((*  head)->location.lenght + 1);
     if (!buffer)
         return (NULL);*/
     cmd = make_exec_command(*head);
+    printf("cmd type is %d\n", cmd->token->type);
     *head = tmp;
     return (cmd);
 }
@@ -51,10 +53,10 @@ t_tree *parse_simple_command(t_token **head)
     t_tree   *cmd;
     t_tree   *tmp;
 
-    printf("in parse simple command head add %p\n", (*head));
+    printf("in parse simple command head add %p\n and its type is %d\n", (*head), (*head)->type);
     /*check for rederection REDIRECTIONS LATER*/
-    if (((*head)->type == LESS || (*head)->type == GREAT)) /*redictions +*/
-        cmd = parse_redirect(head);
+    //if (((*head)->type == LESS || (*head)->type == GREAT)) redictions +
+        //cmd = parse_redirect(head);
     if ((*head)->type == WORD)
     {
         cmd = parse_word(head);
@@ -106,6 +108,9 @@ t_tree *parse_and_or(t_token **head)
     // if && or || is found what was parased before should be
     // left and what next should be right.
     /* there can be mulptiple and and ors probable use a while or recursive?*/
+
+    // didnt return here
+    printf("cmd was allocated and it is address is %p, and it data is %d\n", cmd, cmd->token->type);
     if ((*head)->type == AMPER && (*head)->next->type == WORD)/* should handle |*/
     {
         tmp = cmd;
