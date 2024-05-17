@@ -1,5 +1,7 @@
 #include "tokens.h"
 #include "parser.h"
+#include "pipes.h"
+
 t_token_type decode_type(char *start, int c)
 {
     t_token_type type;
@@ -96,6 +98,9 @@ int main(int ac, char **av)
     if (ac != 2)
         return (0);
     str = av[1];
+    int **pfd = (int **)malloc(sizeof(int *) * 3);
+    for (int i = 0 ; i < 3 ; i++)
+        pfd[i] = (int *)malloc(sizeof(int) * 2);
     t_token *tokens;
     t_token *tmp;
     t_tree *temp;
@@ -105,7 +110,6 @@ int main(int ac, char **av)
 	tokens_v2(&tokens);
     tmp = tokens;
     t_tree *root = parser(tokens);
-    tempo = root;
     /*while (tempo != NULL)
     {
         printf("tree type is %d\n", tempo->type);
@@ -120,7 +124,7 @@ int main(int ac, char **av)
         break;
     }*/
     //bfs(&root);
-    //pre_order_traversal(&root);
-    left_root_right(&root);
-    
+     //pre_order_traversal(&root);
+    //left_root_right(&root);
+    run_cmd(&root, pfd, 2, 3); //send in number of pipes
 }

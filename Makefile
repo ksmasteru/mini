@@ -1,19 +1,19 @@
-NAME = pars
+NAME = TEST
 CC = cc
 #CFLAGS = -Wall -Wextra -Werror
 
-SRCS = tokenization.c makers.c tokens_v2.c parser.c
+SRCS = tokenization.c makers.c tokens_v2.c parser.c run_cmd.c
 
 OBJS = $(SRCS:.c=.o)
 
 
 all : $(NAME)
 
-.%o :	%.c
-	@$(CC) $(CFLAGS) -c $< -o $@
+%.o :	%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME) : $(OBJS)
-	@$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 clean :
 	@rm -f $(OBJS)
