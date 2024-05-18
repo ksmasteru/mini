@@ -1,0 +1,2 @@
+each process has to wait for the previpus process with waitpid. or some command will stuck
+on read

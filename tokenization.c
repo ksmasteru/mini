@@ -98,8 +98,9 @@ int main(int ac, char **av)
     if (ac != 2)
         return (0);
     str = av[1];
-    int **pfd = (int **)malloc(sizeof(int *) * 3);
-    for (int i = 0 ; i < 3 ; i++)
+    int pids[4];
+    int **pfd = (int **)malloc(sizeof(int *) * 4);
+    for (int i = 0 ; i < 4 ; i++)
         pfd[i] = (int *)malloc(sizeof(int) * 2);
     t_token *tokens;
     t_token *tmp;
@@ -126,5 +127,7 @@ int main(int ac, char **av)
     //bfs(&root);
      //pre_order_traversal(&root);
     //left_root_right(&root);
-    run_cmd(&root, pfd, 2, 3); //send in number of pipes
+    fill_pipes(&pfd, 4);
+    run_cmd(&root, pfd, 3, 4, pids); //send in number of pipes good so far it has to be 1
+                                // so the left can be 0
 }
