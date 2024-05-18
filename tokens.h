@@ -49,6 +49,16 @@ typedef struct s_queue{
     struct s_queue *next;
 }t_queue;
 
+typedef struct s_data{
+    char *str;
+    t_tree **head;
+    int **fdx;
+    int index;
+    int len;
+    int *pids;
+    char **envp;
+    char **env; 
+}t_data;
 
 t_token *make_new_node(t_token_type type, char *start, size_t length);
 void add_new_token(t_token **head , int c, char *start, size_t length);

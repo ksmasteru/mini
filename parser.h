@@ -10,6 +10,8 @@ typedef struct s_stack{
 }t_stack;
 
 
+char **get_word_args(t_tree *head);
+char *slice_and_dice(t_slice slice);
 t_tree *parser(t_token *head);
 t_tree *parse_complete_cmd(t_token **head);
 t_tree *parse_and_or(t_token **head);

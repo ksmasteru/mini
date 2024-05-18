@@ -1,6 +1,7 @@
 #include "tokens.h"
 #include "parser.h"
 #include "pipes.h"
+#include "executer.h"
 
 t_token_type decode_type(char *start, int c)
 {
@@ -91,13 +92,17 @@ t_token  *lexer(char *str)
     return (head);
 }
 
-int main(int ac, char **av)
+
+/* SEG when there is no pipe*/
+int main(int ac, char **av, char **envp)
 {
 
     char *str;
+    t_data data;
     if (ac != 2)
         return (0);
     str = av[1];
+    data.envp = envp;
     int pids[4];
     int **pfd = (int **)malloc(sizeof(int *) * 4);
     for (int i = 0 ; i < 4 ; i++)
@@ -128,6 +133,8 @@ int main(int ac, char **av)
      //pre_order_traversal(&root);
     //left_root_right(&root);
     fill_pipes(&pfd, 4);
-    run_cmd(&root, pfd, 3, 4, pids); //send in number of pipes good so far it has to be 1
+    data.env = get_envp(data.envp);
+    run_cmd(&root, pfd, 3, 4, pids, &data); //send in number of pipes good so far it has to be 1
                                 // so the left can be 0
+    //printf("token data is %s", root->right->token->location.location);
 }

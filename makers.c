@@ -66,7 +66,7 @@ t_tree *make_exec_command(t_token *word)
     if (!new)
         return (NULL);
     new->type = WORD;
-    new->token = NULL;
+    new->token = word;
     new->left = NULL;
     new->right = NULL;
     return (new);

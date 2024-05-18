@@ -1,10 +1,23 @@
 #include "tokens.h"
 #include "parser.h"
 #include "pipes.h"
+#include "executer.h"
 #include <fcntl.h>
 #define READER 0
 #define WRITER 1
 #define NEUTER 2
+
+
+
+int ft_strlen(char *s1)
+{
+     int i;
+
+     i = 0;
+     while (s1[i])
+          i++;
+     return (i);
+}
 
 int close_pipes(int **p, int index, int len)
 {
@@ -69,22 +82,59 @@ int	fill_pipes(int ***p, int n)
 	return (0);
 }
 
-int execute_cmd(t_tree *head, int **fdx, int index, int len, int *pids)
+char *slice_and_dice(t_slice slice)
+{
+     char *res;
+
+     res = malloc(sizeof(char) * (slice.lenght + 1));
+     if (!res)
+          return (NULL);
+     res[slice.lenght] = '\0';
+     strncpy(res, slice.location, slice.lenght);
+     return(res);
+}
+char **get_word_args(t_tree *head)
+{
+     int words_number;
+     t_token *tmp;
+     char **args;
+     int i;
+
+     i = 0;
+     words_number = 0;
+     tmp = head->token;
+     while (tmp)
+     {
+          words_number++;
+          tmp = tmp->up;   
+     }
+     args = (char **) malloc(sizeof(char *) * (words_number + 1));
+     if (!args)
+          perror("args");
+     tmp = head->token;
+     while (i < words_number)
+     {
+          args[i] = slice_and_dice(tmp->location);
+          if (!args[i])
+               perror("args[i]");
+          i++;
+          tmp = tmp->up;
+     }
+     args[i] = NULL;
+     return  (args);
+}
+
+int execute_cmd(t_tree *head, int **fdx, int index, int len, int *pids, t_data *data)
 {
      int pid;
      char buffer[1024];
      char **args;
      char *cmd;
-     if (index == 0)
-     {
-          args = (char*[]){"ls", "-la", NULL};
-          cmd = "/bin/ls";
-     }
-     if (index == 1 || index == 2 || index == 3)
-     {
-          args = (char*[]){"ls", "-la", NULL};
-          cmd = "/bin/ls";
-     }
+     int i = 0;
+     args = get_word_args(head);
+     if (!args)
+          perror("args");
+     cmd = get_path(data->env, args[0]); // get paths and store it in a struct memeber
      pids[index] = fork();     
      if (pids[index] == 0)
      {
@@ -117,18 +167,18 @@ int execute_cmd(t_tree *head, int **fdx, int index, int len, int *pids)
      return (0);
 }
 
-void run_cmd(t_tree **head, int **fd, int index, int len, int *pids)
+void run_cmd(t_tree **head, int **fd, int index, int len, int *pids, t_data *data)
 {
      if (*head == NULL)  
           return ;
      if ((*head)->type == WORD)
           return ;
-     run_cmd(&((*head)->left), fd, index - 1, len, pids);
+     run_cmd(&((*head)->left), fd, index - 1, len, pids, data);
      if ((*head)->left->type == WORD) 
      {
-          execute_cmd((*head)->left, fd, index - 1, len, pids);
-          execute_cmd((*head)->right, fd, index, len, pids);
+          execute_cmd((*head)->left, fd, index - 1, len, pids, data);
+          execute_cmd((*head)->right, fd, index, len, pids, data);
      }
      else 
-          execute_cmd((*head)->right, fd, index, len, pids);
+          execute_cmd((*head)->right, fd, index, len, pids, data);
 }

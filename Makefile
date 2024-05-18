@@ -1,8 +1,9 @@
 NAME = TEST
 CC = cc
-#CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -g
 
-SRCS = tokenization.c makers.c tokens_v2.c parser.c run_cmd.c
+SRCS = tokenization.c makers.c tokens_v2.c parser.c run_cmd.c get_paths.c \
+		 ft_split.c get_envp.c ft_strjoin.c
 
 OBJS = $(SRCS:.c=.o)
 
