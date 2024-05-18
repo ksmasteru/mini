@@ -47,20 +47,20 @@ int	close_and_dup(int **p, int index, int len)
                perror("error");
           close(p[0][1]);
      }
-     else if(index == 2 || index == 1)
+     else if (index == len - 1)
+     {
+          dup2(p[index - 1][0], 0);
+          close(p[index - 1][0]);
+          dup2(p[index][1], 1);
+          close(p[index][1]);
+     }
+     else
      {
           if(dup2(p[index - 1][0], 0) < 0)
                perror("error");
           close(p[index - 1][0]);
           if (dup2(p[index][1] , 1) < 0)
                perror("error");
-          close(p[index][1]);
-     }
-     else if (index == 3)
-     {
-          dup2(p[index - 1][0], 0);
-          close(p[index - 1][0]);
-          dup2(p[index][1], 1);
           close(p[index][1]);
      }
 	return (0);
@@ -124,7 +124,19 @@ char **get_word_args(t_tree *head)
      return  (args);
 }
 
-int execute_cmd(t_tree *head, int **fdx, int index, int len, int *pids, t_data *data)
+int close_pipes_main(int **fdx, int words_count)
+{
+     int i;
+
+     i = 0;
+     while (i < words_count)
+     {
+          close(fdx[i][0]);
+          close(fdx[i][1]);
+          i++;
+     }
+}
+int execute_cmd(t_tree *head, int index, int len, t_data *data)
 {
      int pid;
      char buffer[1024];
@@ -132,53 +144,55 @@ int execute_cmd(t_tree *head, int **fdx, int index, int len, int *pids, t_data *
      char *cmd;
      int i = 0;
      args = get_word_args(head);
+     //printf("child process running in %d\n", getpid()); 
      if (!args)
           perror("args");
      cmd = get_path(data->env, args[0]); // get paths and store it in a struct memeber
-     pids[index] = fork();     
-     if (pids[index] == 0)
+    // if (index == len - 1)
+      //    execute_cmd_parent();
+     (data->pids)[index] = fork();
+     if (index != len - 1)     
      {
-          if (index != 0)
-               waitpid(pids[index - 1],NULL, 0);
-          close_and_dup(fdx , index, len);
-          if (execve(cmd, args, NULL) < 0)
-               perror("execve");
-          exit(0);
+          if ((data->pids)[index] == 0)
+          {
+               if (index != 0)
+               waitpid(data->pids[index - 1],NULL, 0);
+               close_and_dup(data->fdx , index, len);
+               if (execve(cmd, args, NULL) < 0)
+                    perror("execve");
+               exit(0);
+          }
      }
      else
      {
-          if (index == 3)
-          {
-               wait(NULL);
-               close(fdx [0][0]);
-               close(fdx[0][1]);
-               close(fdx[1][0]);
-               close(fdx[1][1]);
-               close(fdx[2][0]);
-               close(fdx[2][1]);
-               close(fdx[3][1]);
-               dup2(fdx[3][0],0);
-               close(fdx[3][0]);
-               int d = read(0, buffer, 100);
-               buffer[d] = '\0';
-               printf("has read %d and value is %s\n", d, buffer);               
+          if (index == len - 1)
+          {     // run the last cmd on this
+               printf("index is %d", index);
+               waitpid(data->pids[index - 1], NULL, 0);
+               close_and_dup(data->fdx, index, len);
+               dup2(data->fdx[len - 1][0], 0);
+               close(data->fdx[len - 1][0]);
+               if (execve(cmd, args, NULL) < 0)
+                    perror("execve");
+               exit(0);      
           }
+          wait (NULL);
      }
      return (0);
 }
 
-void run_cmd(t_tree **head, int **fd, int index, int len, int *pids, t_data *data)
+void run_cmd(t_tree **head, int index, int len, t_data *data)
 {
      if (*head == NULL)  
           return ;
      if ((*head)->type == WORD)
           return ;
-     run_cmd(&((*head)->left), fd, index - 1, len, pids, data);
+     run_cmd(&((*head)->left), index - 1, len, data);
      if ((*head)->left->type == WORD) 
      {
-          execute_cmd((*head)->left, fd, index - 1, len, pids, data);
-          execute_cmd((*head)->right, fd, index, len, pids, data);
+          execute_cmd((*head)->left, index - 1, len, data);
+          execute_cmd((*head)->right, index, len, data);
      }
      else 
-          execute_cmd((*head)->right, fd, index, len, pids, data);
+          execute_cmd((*head)->right, index, len,data);
 }

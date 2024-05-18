@@ -96,17 +96,13 @@ t_token  *lexer(char *str)
 /* SEG when there is no pipe*/
 int main(int ac, char **av, char **envp)
 {
-
     char *str;
     t_data data;
     if (ac != 2)
         return (0);
     str = av[1];
     data.envp = envp;
-    int pids[4];
-    int **pfd = (int **)malloc(sizeof(int *) * 4);
-    for (int i = 0 ; i < 4 ; i++)
-        pfd[i] = (int *)malloc(sizeof(int) * 2);
+    data.words_count = 0;
     t_token *tokens;
     t_token *tmp;
     t_tree *temp;
@@ -115,7 +111,7 @@ int main(int ac, char **av, char **envp)
     tokens = lexer(str);
 	tokens_v2(&tokens);
     tmp = tokens;
-    t_tree *root = parser(tokens);
+    t_tree *root = parser(tokens, &data);
     /*while (tempo != NULL)
     {
         printf("tree type is %d\n", tempo->type);
@@ -132,9 +128,15 @@ int main(int ac, char **av, char **envp)
     //bfs(&root);
      //pre_order_traversal(&root);
     //left_root_right(&root);
-    fill_pipes(&pfd, 4);
+    int *pids = (int *)malloc(sizeof(int) * data.words_count);
+    int **pfd = (int **)malloc(sizeof(int *) * data.words_count);
+    for (int i = 0 ; i < data.words_count ; i++)
+        pfd[i] = (int *)malloc(sizeof(int) * 2);
+    fill_pipes(&pfd, data.words_count);
+    data.fdx = pfd;
+    data.pids = pids;
     data.env = get_envp(data.envp);
-    run_cmd(&root, pfd, 3, 4, pids, &data); //send in number of pipes good so far it has to be 1
+    run_cmd(&root, data.words_count - 1, data.words_count, &data); //send in number of pipes good so far it has to be 1
                                 // so the left can be 0
     //printf("token data is %s", root->right->token->location.location);
 }

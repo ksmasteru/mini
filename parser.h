@@ -1,7 +1,6 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-
 #include "tokens.h"
 
 typedef struct s_stack{
@@ -12,15 +11,14 @@ typedef struct s_stack{
 
 char **get_word_args(t_tree *head);
 char *slice_and_dice(t_slice slice);
-t_tree *parser(t_token *head);
-t_tree *parse_complete_cmd(t_token **head);
-t_tree *parse_and_or(t_token **head);
-t_tree *parse_pipe_line(t_token **head);
-t_tree *parse_command(t_token **head);
-t_tree *parse_simple_command(t_token **head);
-t_tree *parse_redirect(t_token **head);
-t_tree *parse_word(t_token **head);
-t_tree *parse_word(t_token **head);
+t_tree *parser(t_token *head, t_data *data);
+t_tree *parse_complete_cmd(t_token **head, t_data *data);
+t_tree *parse_and_or(t_token **head, t_data *data);
+t_tree *parse_pipe_line(t_token **head, t_data *data);
+t_tree *parse_command(t_token **head, t_data *data);
+t_tree *parse_simple_command(t_token **head, t_data *data);
+t_tree *parse_redirect(t_token **head, t_data *data);
+t_tree *parse_word(t_token **head, t_data *data);
 t_tree *make_exec_command(t_token *word);
 t_tree *make_great_command(t_tree *left, t_tree *right);
 t_tree *make_or_command(t_tree *left, t_tree *right);

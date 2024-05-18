@@ -55,6 +55,7 @@ typedef struct s_data{
     int **fdx;
     int index;
     int len;
+    int words_count;
     int *pids;
     char **envp;
     char **env; 
