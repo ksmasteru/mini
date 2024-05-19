@@ -128,15 +128,21 @@ int main(int ac, char **av, char **envp)
     //bfs(&root);
      //pre_order_traversal(&root);
     //left_root_right(&root);
-    int *pids = (int *)malloc(sizeof(int) * data.words_count);
-    int **pfd = (int **)malloc(sizeof(int *) * data.words_count);
-    for (int i = 0 ; i < data.words_count ; i++)
-        pfd[i] = (int *)malloc(sizeof(int) * 2);
-    fill_pipes(&pfd, data.words_count);
-    data.fdx = pfd;
-    data.pids = pids;
     data.env = get_envp(data.envp);
-    run_cmd(&root, data.words_count - 1, data.words_count, &data); //send in number of pipes good so far it has to be 1
+    if (data.words_count > 1)
+    {
+        int *pids = (int *)malloc(sizeof(int) * (data.words_count - 1));
+        int **pfd = (int **)malloc(sizeof(int *) * data.words_count - 1);
+        for (int i = 0 ; i < data.words_count ; i++)
+            pfd[i] = (int *)malloc(sizeof(int) * 2);
+        fill_pipes(&pfd, data.words_count - 1);
+        data.fdx = pfd;
+        data.pids = pids;
+        run_cmd(&root, data.words_count - 1, data.words_count, &data);
+    }
+    else
+        execute_cmd(root, 0, 1, &data);
+ //send in number of pipes good so far it has to be 1
                                 // so the left can be 0
     //printf("token data is %s", root->right->token->location.location);
 }

@@ -85,6 +85,8 @@ t_tree *parse_pipe_line(t_token **head, t_data *data)
 
     cmd = parse_command(head, data); // if here another pipe line it should be
                                 // at the left of this
+    if (*head == NULL)
+        return (cmd);
     while ((*head)->type == PIPE) // what is is another --> stopped at a token
     {
         //seems logic, but it stops for one iteration need a ew

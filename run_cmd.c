@@ -71,6 +71,7 @@ int	fill_pipes(int ***p, int n)
 	int	i;
 
 	i = 0;
+     printf("number o pipes is %d", n);
 	while (i < n)
 	{
 		if (pipe((*p)[i++]) != 0)
@@ -124,65 +125,80 @@ char **get_word_args(t_tree *head)
      return  (args);
 }
 
-int close_pipes_main(int **fdx, int words_count)
+int close_all_pipes(int **pfx, int len)
+{
+     int i;
+
+     //printf("len - 1 is %d", len - 1);
+     i = 0;
+     while (i < len - 1)
+     {
+          close(pfx[i][0]);
+          close(pfx[i][1]);
+          i++;
+     }
+     return (0);
+}
+int close_and_dup2(int **pfx, int index, int len)
+{
+     if (index == 0)
+          dup2(pfx[0][1], 1);
+     else if (index == len - 1)
+          dup2(pfx[index - 1][0], 0);
+     else if (index != 0 && index != len - 1)
+     {
+          dup2(pfx[index - 1][0], 0);
+          dup2(pfx[index][1], 1);
+     }
+     close_all_pipes(pfx, len);
+     return (0);
+}
+int run_cmd_main(char **args, char *cmd, int index, t_data *data)
 {
      int i;
 
      i = 0;
-     while (i < words_count)
-     {
-          close(fdx[i][0]);
-          close(fdx[i][1]);
-          i++;
-     }
+     //waitpid(data->pids[index - 1], NULL, 0); not waiting always work
+     //printf("succesugly running run_cmd_main\n");
+     if (data->words_count != 1)
+          close_and_dup2(data->fdx, index, data->words_count);
+     if (execve(cmd, args, data->envp) < 0)
+          perror("execve");
+     exit(0);
 }
+
 int execute_cmd(t_tree *head, int index, int len, t_data *data)
 {
-     int pid;
-     char buffer[1024];
      char **args;
      char *cmd;
      int i = 0;
-     args = get_word_args(head);
-     //printf("child process running in %d\n", getpid()); 
+     args = get_word_args(head); 
      if (!args)
           perror("args");
-     cmd = get_path(data->env, args[0]); // get paths and store it in a struct memeber
-    // if (index == len - 1)
-      //    execute_cmd_parent();
-     (data->pids)[index] = fork();
-     if (index != len - 1)     
+     cmd = get_path(data->env, args[0]);
+     if (index == len - 1 || len == 1)
+          return (run_cmd_main(args, cmd, index, data));
+     data->pids[index] = fork();
+     if (data->pids[index] == 0)
      {
-          if ((data->pids)[index] == 0)
+          if (index != 0)
           {
-               if (index != 0)
-               waitpid(data->pids[index - 1],NULL, 0);
-               close_and_dup(data->fdx , index, len);
-               if (execve(cmd, args, NULL) < 0)
-                    perror("execve");
-               exit(0);
+               while (i <= index - 1)
+                    waitpid(data->pids[i++], NULL, 0);
           }
+          //printf("process of index %d and pid %d\n", index, getpid());
+          close_and_dup2(data->fdx, index, data->words_count);
+          if (execve(cmd, args, data->envp) < 0)
+               perror("execve");
+          exit(0);
      }
      else
-     {
-          if (index == len - 1)
-          {     // run the last cmd on this
-               printf("index is %d", index);
-               waitpid(data->pids[index - 1], NULL, 0);
-               close_and_dup(data->fdx, index, len);
-               dup2(data->fdx[len - 1][0], 0);
-               close(data->fdx[len - 1][0]);
-               if (execve(cmd, args, NULL) < 0)
-                    perror("execve");
-               exit(0);      
-          }
-          wait (NULL);
-     }
-     return (0);
+          return (0);
 }
 
 void run_cmd(t_tree **head, int index, int len, t_data *data)
 {
+  
      if (*head == NULL)  
           return ;
      if ((*head)->type == WORD)
