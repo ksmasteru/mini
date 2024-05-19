@@ -20,8 +20,9 @@ typedef enum s_token_type{
     WORDS = 11,
     HEREDOC = 12,
     LESS = 13,
-    FILE_NAME = 14,
+    IN_FILE = 14,
     GREATGREAT = 15,
+    OUT_FILE = 16,
 }t_token_type;
 
 typedef struct s_slice{

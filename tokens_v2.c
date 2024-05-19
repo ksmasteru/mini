@@ -20,6 +20,7 @@ void merge_words(t_token **current, t_token **next)
 // "hello wrold lol | daspipee | another big fucking pipe"
 
 //"will handle redirections later"
+// < file wc -w ---> make the word after < as infine the other as a signle word
 void tokens_v2(t_token **tokens)
 {
     t_token *new;
@@ -31,15 +32,25 @@ void tokens_v2(t_token **tokens)
         /*join words*/
         if (tmp->next != NULL)
         {
+            if (tmp->type == GREAT && tmp->next->type == WORD)
+            {
+                tmp->next->type = IN_FILE;
+                tmp = tmp->next->next;
+                continue;
+            }
+            if (tmp->type == LESS && tmp->next->type == WORD)
+            {
+                tmp->next->type = OUT_FILE;
+                tmp = tmp->next->next;
+                continue;
+            }
             if (tmp->type == WORD && tmp->next->type == WORD)
             {
                 merge_words(&tmp, &(tmp->next));
                 continue;
             }
-            else if (tmp->type == LESS && tmp->next->type == WORD)
-                tmp->next->type = FILE_NAME;
             else if (tmp->type == HEREDOC && tmp->next->type == WORD)
-                tmp->next->type = FILE_NAME; // will be handled later
+                tmp->next->type = IN_FILE; // will be handled later
             tmp = tmp->next;
         }
         else
