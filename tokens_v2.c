@@ -21,37 +21,45 @@ void merge_words(t_token **current, t_token **next)
 
 //"will handle redirections later"
 // < file wc -w ---> make the word after < as infine the other as a signle word
+void make_redirection_token (t_token **token, t_token *next)
+{
+    t_token *tmp;
+
+    tmp = (*token)->next->next;
+    (*token)->up = next;
+    if ((*token)->type == TO || (*token)->type == APPEND)
+        (*token)->up->type = OUT_FILE;
+    else if ((*token)->type == FROM)
+        (*token)->up->type = IN_FILE;
+    else if ((*token)->type == HEREDOC)
+        ((*token)->up->type = DELIMETER);
+    (*token)->type = REIDRECTION;
+    (*token)->up->up = NULL;
+    (*token)->next = tmp;
+}
+
 void tokens_v2(t_token **tokens)
 {
     t_token *new;
     t_token *tmp;
 
-    tmp = *tokens;  
+    tmp = *tokens;
     while (tmp)
     {
         /*join words*/
+        /* thee lopp exited of this condition*/
         if (tmp->next != NULL)
         {
-            if (tmp->type == FROM && tmp->next->type == WORD)
+            if ((tmp->type >= FROM && tmp->type <= APPEND) && tmp->next->type == WORD)
             {
-                tmp->next->type = IN_FILE;
-                tmp = tmp->next->next;
+                make_redirection_token(&tmp, tmp->next);
                 continue;
             }
-            if (tmp->type == TO && tmp->next->type == WORD)
-            {
-                tmp->next->type = OUT_FILE;
-                tmp = tmp->next->next;
-                continue;
-            }
-
             if (tmp->type == WORD && tmp->next->type == WORD)
             {
                 merge_words(&tmp, &(tmp->next));
                 continue;
             }
-            else if (tmp->type == HEREDOC && tmp->next->type == WORD)
-                tmp->next->type = DELIMETER; // will be handled later
             tmp = tmp->next;
         }
         else

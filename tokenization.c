@@ -95,6 +95,7 @@ t_token  *lexer(char *str)
 /* SEG when there is no pipe*/
 //< operations1.c wc -w
 // LESS FILE CMD
+// exception like cmd > outfile word will be handled later
 
 int main(int ac, char **av, char **envp)
 {
@@ -117,7 +118,18 @@ int main(int ac, char **av, char **envp)
     {
         printf("temp type is %d\n", tmp->type);
         tmp = tmp->next;
+        //printf("temp type is %d\n", tmp->type);
+        //tmp = tmp->next;
+        //printf("temp type is %d\n", tmp->type);
+        //tmp = tmp->next;
+        //printf("temp type is %d\n", tmp->type);
+         //       tmp = tmp->next;
+        //printf("temp type is %d\n", tmp->type);
+        // b9a blan howa join
     }
+
+
+    //}
     //t_tree *root = parser(tokens, &data);
     /*while (tempo != NULL)
     {
