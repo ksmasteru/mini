@@ -2,7 +2,8 @@
 #include "parser.h"
 #include "pipes.h"
 #include "executer.h"
-// < infile
+// < redirection id followed by the filename
+// unless it is a heredoc << it is followed by a delimiter
 t_token_type decode_type(char *start, int c)
 {
     t_token_type type;
@@ -10,13 +11,13 @@ t_token_type decode_type(char *start, int c)
     if (c == '|')
         return  PIPE;
     else if (c == '<' && *(start + 1) == '<') // this might SEGv
-        return (GREATGREAT);
-    else if (c == '<')
-        return (GREAT);
-    else if (c == '>' && *(start + 1) == '>')
         return (HEREDOC);
+    else if (c == '<')
+        return (FROM);
+    else if (c == '>' && *(start + 1) == '>')
+        return (APPEND);
     else if (c == '>')
-        return (LESS);
+        return (TO);
     else if (c == '(')
         return (PAREN_L);
     else if (c == ')')
@@ -63,8 +64,6 @@ t_token  *lexer(char *str)
     char *start;
     size_t length;
     int word;
-    //"     ls    -la      | echo    -la"
-    /* skip spaces */
     t_token *head = NULL;
     char spaces[] = " \t\n\v\f\r";
     while (*str)
@@ -94,6 +93,9 @@ t_token  *lexer(char *str)
 
 
 /* SEG when there is no pipe*/
+//< operations1.c wc -w
+// LESS FILE CMD
+
 int main(int ac, char **av, char **envp)
 {
     char *str;

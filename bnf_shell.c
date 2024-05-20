@@ -6,4 +6,4 @@
 <pipeline>     ::=  <command> { '|' <command> }
 <command>      ::=  <simple_cmd> | '(' <and_or> ')'
 <simple_cmd>   ::=  { <redirect> } <word> { ( <redirect> | <word> ) }
-<redirect>     ::=  ( '<' | '>' | '<<' | '>>' ) <word>
+<redirect>     ::=  ( '<' | '>' | '<<' | '>>' ) <file_name>

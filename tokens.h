@@ -12,17 +12,18 @@ typedef enum s_token_type{
     SPECIAL = 2,
     PIPE = 3,
     AMPER = 4,
-    GREAT = 6,
+    FROM = 6,
     PAREN_L = 7,
     PAREN_R = 8,
     OR = 9,
     AND = 10,
     WORDS = 11,
     HEREDOC = 12,
-    LESS = 13,
+    TO = 13,
     IN_FILE = 14,
-    GREATGREAT = 15,
+    APPEND = 15,
     OUT_FILE = 16,
+    DELIMETER = 17,
 }t_token_type;
 
 typedef struct s_slice{
@@ -44,6 +45,12 @@ typedef struct s_tree{
     struct s_tree *left;
     struct s_tree *right;
 }t_tree;
+
+typedef struct s_redirection
+{
+    t_token_type type;
+    
+}t_redirection;
 
 typedef struct s_queue{
     t_tree *addr;

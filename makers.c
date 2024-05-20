@@ -50,7 +50,7 @@ t_tree *make_great_command(t_tree *left, t_tree *right)
     new = malloc(sizeof(t_tree));
     if (!new)
         return (NULL);
-    new->type = GREAT;
+    new->type = FROM;
     new->token = NULL;
     new->left = left;
     new->right = right;

@@ -32,25 +32,26 @@ void tokens_v2(t_token **tokens)
         /*join words*/
         if (tmp->next != NULL)
         {
-            if (tmp->type == GREAT && tmp->next->type == WORD)
+            if (tmp->type == FROM && tmp->next->type == WORD)
             {
                 tmp->next->type = IN_FILE;
                 tmp = tmp->next->next;
                 continue;
             }
-            if (tmp->type == LESS && tmp->next->type == WORD)
+            if (tmp->type == TO && tmp->next->type == WORD)
             {
                 tmp->next->type = OUT_FILE;
                 tmp = tmp->next->next;
                 continue;
             }
+
             if (tmp->type == WORD && tmp->next->type == WORD)
             {
                 merge_words(&tmp, &(tmp->next));
                 continue;
             }
             else if (tmp->type == HEREDOC && tmp->next->type == WORD)
-                tmp->next->type = IN_FILE; // will be handled later
+                tmp->next->type = DELIMETER; // will be handled later
             tmp = tmp->next;
         }
         else

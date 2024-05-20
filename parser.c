@@ -70,7 +70,7 @@ t_tree *parse_command(t_token **head, t_data *data)
 
     /* if there is non >?*/
     /*simple command case  wron*/
-    if ((*head)->type == WORD || (*head)->type == GREAT || (*head)->type == LESS) /* just for illustaration*/
+    if ((*head)->type == WORD || (*head)->type == TO || (*head)->type == FROM) /* just for illustaration*/
         cmd = parse_simple_command(head, data);
     // it is either one or the other
     else if ((*head)->type == PAREN_L || (*head)->type == PAREN_R) /*here will be handleed later*/ 
