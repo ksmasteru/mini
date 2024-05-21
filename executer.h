@@ -22,5 +22,7 @@ int ft_strlen(char *str);
 int	ft_putstr_fd(int fd, char *str);
 char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strjoin2(char *s1, char *s2, char *str);
-
+int manage_redirection(t_token *redirection);
+int do_redirect(t_token *redirection);
+char *get_file_name(char *location, size_t lent);
 #endif

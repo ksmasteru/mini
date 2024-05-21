@@ -111,74 +111,26 @@ int main(int ac, char **av, char **envp)
     t_token *tmp;
     t_tree *temp;
     t_tree *tempo;
+    t_tree *root;
     t_token *tempa;
     char limiter[] = {"|<>()"};
     tokens = lexer(str);
 	tokens_v2(&tokens);
     tmp = tokens;
-    while (tmp)
+    tmp = tokens;
+    root = parser(tokens, &data);
+    data.env = get_envp(data.envp);
+    if (data.words_count > 1)
     {
-        printf("temp type is %d\n and value is %s\n", tmp->type, tmp->location.location);
-        if (tmp->type == WORD)
-        {
-            tempa = tmp->up;
-            while (tempa)
-            {
-                printf("---up is %s---\n", tempa->location.location);
-                tempa = tempa->up;
-            }
-            tempa = tmp->down;
-            while (tempa)
-            {
-                printf("---down is %s---\n", tempa->location.location);
-                tempa = tempa->down;
-            }
-        }
-        tmp = tmp->next;
-        //printf("temp type is %d\n", tmp->type);
-        //tmp = tmp->next;
-        //printf("temp type is %d\n", tmp->type);
-        //tmp = tmp->next;
-        //printf("temp type is %d\n", tmp->type);
-         //       tmp = tmp->next;
-        //printf("temp type is %d\n", tmp->type);
-        // b9a blan howa join
+      int *pids = (int *)malloc(sizeof(int) * (data.words_count - 1));
+        int **pfd = (int **)malloc(sizeof(int *) * data.words_count - 1);
+        for (int i = 0 ; i < data.words_count ; i++)
+          pfd[i] = (int *)malloc(sizeof(int) * 2);
+        fill_pipes(&pfd, data.words_count - 1);
+        data.fdx = pfd;
+        data.pids = pids;
+        run_cmd(&root, data.words_count - 1, data.words_count, &data);
     }
-
-
-    //}==
-    //t_tree *root = parser(tokens, &data);
-    /*while (tempo != NULL)
-    {
-        printf("tree type is %d\n", tempo->type);
-        printf("temp left is %d\n", tempo->left->type);
-        printf("temp right is %d\n", tempo->right->type);
-        tempo = tempo->left;
-        printf("down level left\n");
-        printf("tree type is %d\n", tempo->type);
-        printf("temp left type is %d\n", tempo->left->type);
-        printf("temp right type is %d\n", tempo->right->type);
-        
-        break;
-    }*/
-    //bfs(&root);
-     //pre_order_traversal(&root);
-    //left_root_right(&root);
-    //data.env = get_envp(data.envp);
-    //if (data.words_count > 1)
-    //{
-      //  int *pids = (int *)malloc(sizeof(int) * (data.words_count - 1));
-        //int **pfd = (int **)malloc(sizeof(int *) * data.words_count - 1);
-        //for (int i = 0 ; i < data.words_count ; i++)
-          //  pfd[i] = (int *)malloc(sizeof(int) * 2);
-        //fill_pipes(&pfd, data.words_count - 1);
-        //data.fdx = pfd;
-        //data.pids = pids;
-        //run_cmd(&root, data.words_count - 1, data.words_count, &data);
-    //}
-    //else
-        //execute_cmd(root, 0, 1, &data);
- //send in number of pipes good so far it has to be 1
-                                // so the left can be 0
-    //printf("token data is %s", root->right->token->location.location);
+    else
+        execute_cmd(root, 0, 1, &data);
 }

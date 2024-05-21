@@ -167,6 +167,69 @@ int run_cmd_main(char **args, char *cmd, int index, t_data *data)
      exit(0);
 }
 
+char *get_file_name(char *location, size_t lent)
+{
+     char *file_name;
+
+     file_name = (char *)malloc(sizeof(char) * (lent + 1));
+     if (!file_name)
+          return (NULL);
+     file_name[lent] = '\0';
+     strncpy(file_name, location, lent);
+     return (file_name);
+}
+int do_redirect(t_token *redirection)
+{
+     t_token *temp;
+     char *file_name;
+     int fd;
+
+     temp = redirection;
+     if (temp == NULL)
+          return (1);
+     file_name = get_file_name(temp->location.location, temp->location.lenght);
+     if (!file_name)
+          perror("filename");
+     if (temp->type == IN_FILE)
+     {
+          fd = open(file_name, O_RDONLY);
+          if (fd == -1)
+          {
+               perror("open");
+               exit (1);
+          }
+          dup2(fd, 0);
+          close(fd);  
+     }
+     else if (temp->type == OUT_FILE)
+     {
+          fd = open(file_name, O_RDWR | O_CREAT, 0644);
+          if (fd == -1)
+               perror("open");
+          dup2(fd, 1);
+          close(1);    
+     }
+     return (0);
+}
+
+int manage_redirections(t_token *redirection)
+{
+     // WORD 
+     // down
+     // REDIRECTION --> UP TOKEN OF WHICH FILE IT HOLDS .// APPEND ?
+     //
+    t_token *temp;
+
+    temp = redirection;
+    while (temp)
+    {
+          if (do_redirect(temp->up) != 0)
+               return (1);
+          temp = temp->down;
+    }
+     return (0);
+}
+
 int execute_cmd(t_tree *head, int index, int len, t_data *data)
 {
      char **args;
@@ -176,6 +239,8 @@ int execute_cmd(t_tree *head, int index, int len, t_data *data)
      if (!args)
           perror("args");
      cmd = get_path(data->env, args[0]);
+     if (head->token->down != NULL)
+          manage_redirections(head->token->down); //return 1 on error
      if (index == len - 1 || len == 1)
           return (run_cmd_main(args, cmd, index, data));
      data->pids[index] = fork();
@@ -183,7 +248,7 @@ int execute_cmd(t_tree *head, int index, int len, t_data *data)
      {
           if (index != 0)
           {
-               while (i <= index - 1)
+                while (i <= index - 1)
                     waitpid(data->pids[i++], NULL, 0);
           }
           //printf("process of index %d and pid %d\n", index, getpid());
