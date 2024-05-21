@@ -191,7 +191,6 @@ int do_redirect(t_token *redirection)
      file_name = get_file_name(temp->location.location, temp->location.lenght);
      if (!file_name)
           perror("filename");
-     printf("filname is %s and temp type is %d\n", file_name, temp->type);
      if (temp->type == IN_FILE)
      {
           fd = open(file_name, O_RDONLY);
@@ -253,7 +252,6 @@ int execute_cmd(t_tree *head, int index, int len, t_data *data)
                 while (i <= index - 1)
                     waitpid(data->pids[i++], NULL, 0);
           }
-          //printf("process of index %d and pid %d\n", index, getpid());
           close_and_dup2(data->fdx, index, data->words_count);
           if (execve(cmd, args, data->envp) < 0)
                perror("execve");

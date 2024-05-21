@@ -68,9 +68,10 @@ void tokens_v2(t_token **tokens)
         else
             tmp = tmp->next;
     }
-    tmp = *tokens;
+    improve_tokens(tokens);
+    //tokens_v5(tokens);
+    //tmp = *tokens;
     //*tokens = tokens_v4(tmp);
-    tokens_v5(tokens);
 }
 void ft_list_add_back(t_token **head, t_token *new)
 {
@@ -193,23 +194,182 @@ void word_add_down(t_token **word, t_token *redir)
         tmp->down->down = NULL;
     }
 }
+// make word the parent of redirection and swap it
+// 18 -> 1 ==> 1    printf("tmp token is %d and adress is %p", tmp->type, (*tokens));
+             //18
+
+void swap_redir_word(t_token **redir, t_token *word)
+{
+    t_token *temp;
+    t_token *tmp_dwn;
+    t_token *word_next;
+
+    word_next = word->next;
+    temp = *redir;
+    tmp_dwn = word->down;
+    if (tmp_dwn == NULL)
+        word->down = temp;
+    else
+    {
+        while (tmp_dwn->down)
+            tmp_dwn = tmp_dwn->down;
+        tmp_dwn->down = temp; // first problem it should be at the top!
+    }
+    *redir = word;
+    (*redir)->next = word_next;
+}
 void *tokens_v5(t_token **tokens)
 {
     t_token *temp;
-
+// 18 -> 1 === 1
     temp = *tokens;
+    t_token *head;
+
+    head = NULL;
     while (temp->next)
     {
+        if (temp->type == REIDRECTION && temp->next->type == WORD)
+        {
+            swap_redir_word(&temp, temp->next);
+            if (head == NULL)
+                head = temp;
+            continue;
+        }
         if (temp->type == WORD && temp->next->type == REIDRECTION)
         {
             word_add_down(&temp, temp->next);
+            if (head == NULL)
+                head = temp;
             continue;
         }
         if (temp->type == WORD && temp->next->type == WORD)
         {
             merge_words(&temp, &(temp->next));
+            if (head == NULL)
+                head = temp;
             continue;
         }
         temp = temp->next;
     }
+}
+// makes a linked list of words with the up atrribute.
+void merge_the_words(t_token **words_list, t_token *new_word)
+{
+    t_token *tmp;
+    t_token *last_up;
+
+    tmp = *words_list;
+    if (!tmp)
+    {
+        *words_list = new_word;
+        return ;
+    }
+    if ((tmp->up) == NULL)
+        tmp->up = new_word;
+    else
+    {
+        while (tmp->up)
+            tmp = tmp->up;
+        tmp->up = new_word;
+        tmp->up->up = NULL;
+
+    }
+}
+// makes a linked list of redirect with the down atrribute
+void merge_the_redirections(t_token **redirection_list, t_token *new_red)
+{
+    t_token *tmp;
+
+    tmp = *redirection_list;
+    if (!tmp)
+    {
+        *redirection_list = new_red;
+        return ;
+    }
+    if (!tmp->down)
+        tmp->down = new_red;
+    else
+    {
+        while (tmp->down)
+            tmp = tmp->down;
+        tmp->down = new_red;
+        tmp->down->down = NULL;
+    }
+}
+
+// makes two lists
+t_token *merge_simple_command(t_token **words_list, t_token  **redirection_list)
+{
+    t_token *simple_command;
+    
+    if (*words_list != NULL)
+    {
+        (*words_list)->down = *redirection_list;
+        simple_command = *words_list;
+    }
+    else
+        simple_command = *redirection_list;
+    return (simple_command);
+}
+t_token *tokens_v6(t_token **tokens)
+{
+    t_token *tmp;
+    t_token *redirection_list;
+    t_token *words_list;
+    t_token *shunk;
+
+    redirection_list = NULL;
+    words_list = NULL;
+    tmp = *tokens;
+    while (tmp->type != PIPE)
+    {
+        if (tmp->type == WORD)
+            merge_the_words(&words_list, tmp);
+        else if (tmp->type == REIDRECTION)
+            merge_the_redirections(&redirection_list, tmp);
+        tmp = tmp->next;
+        if (tmp == NULL)
+            break;
+    }
+    shunk = merge_simple_command(&words_list, &redirection_list);
+
+    *tokens = tmp;// ????
+    return (shunk);
+}
+// links using the next attribute
+void ft_list_addback(t_token **head, t_token *new)
+{
+    t_token *tmp;
+
+    tmp = *head;
+    if (!new)
+        return ;
+    if (!tmp)
+    {
+        *head = new;
+        return ;
+    }
+    while (tmp->next)
+        tmp = tmp->next;
+    tmp->next = new;
+    tmp->next->next = NULL;
+}
+void improve_tokens(t_token **tokens)
+{
+    t_token *tmp;
+    t_token *shunk;
+    t_token *final_list;
+
+    final_list = NULL;
+    tmp = *tokens;
+    while (tmp != NULL)
+    {
+        shunk = tokens_v6(tokens);
+        ft_list_addback(&final_list, shunk);
+        if (*tokens == NULL)
+            break;
+         if ((*tokens)->type == PIPE)
+            tmp = (*tokens)->next;
+    }
+    *tokens = final_list; //should all free all used nods
 }

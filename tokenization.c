@@ -117,8 +117,16 @@ int main(int ac, char **av, char **envp)
     tokens = lexer(str);
 	tokens_v2(&tokens);
     tmp = tokens;
-    tmp = tokens;
-    root = parser(tokens, &data);
+    while (tmp)
+    {
+        printf(" tmp type %d\n", tmp->type);
+        if (tmp->down)
+            printf("  down is %d\n", tmp->down->type);
+        if (tmp->up)
+            printf("  tmp up is %d\n", tmp->up->type);
+        tmp = tmp->next;
+    }
+    /*root = parser(tokens, &data);
     data.env = get_envp(data.envp);
     if (data.words_count > 1)
     {
@@ -132,5 +140,5 @@ int main(int ac, char **av, char **envp)
         run_cmd(&root, data.words_count - 1, data.words_count, &data);
     }
     else
-        execute_cmd(root, 0, 1, &data);
+        execute_cmd(root, 0, 1, &data);*/
 }
