@@ -160,6 +160,7 @@ int run_cmd_main(char **args, char *cmd, int index, t_data *data)
      i = 0;
      //waitpid(data->pids[index - 1], NULL, 0); not waiting always work
      //printf("succesugly running run_cmd_main\n");
+     // if there is a redirection.
      if (data->words_count != 1)
           close_and_dup2(data->fdx, index, data->words_count);
      if (execve(cmd, args, data->envp) < 0)
@@ -190,6 +191,7 @@ int do_redirect(t_token *redirection)
      file_name = get_file_name(temp->location.location, temp->location.lenght);
      if (!file_name)
           perror("filename");
+     printf("filname is %s and temp type is %d\n", file_name, temp->type);
      if (temp->type == IN_FILE)
      {
           fd = open(file_name, O_RDONLY);
@@ -203,11 +205,11 @@ int do_redirect(t_token *redirection)
      }
      else if (temp->type == OUT_FILE)
      {
-          fd = open(file_name, O_RDWR | O_CREAT, 0644);
+          fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
           if (fd == -1)
                perror("open");
           dup2(fd, 1);
-          close(1);    
+          close(fd);
      }
      return (0);
 }
@@ -229,7 +231,7 @@ int manage_redirections(t_token *redirection)
     }
      return (0);
 }
-
+//" < infile cmd segv"
 int execute_cmd(t_tree *head, int index, int len, t_data *data)
 {
      char **args;
