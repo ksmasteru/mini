@@ -1,8 +1,7 @@
 #include "tokens.h"
 #include "parser.h"
 
-// word->word->pipe = words->pipe
-
+// check if down and up attributes store data correctly in the word token
 void merge_words(t_token **current, t_token **next)
 {
     // change from 2 word to 1 word token
@@ -179,21 +178,20 @@ void word_add_down(t_token **word, t_token *redir)
     t_token *tmp;
     t_token *prev_down;
     t_token *new_next;
-
-    new_next = redir->next;
-    tmp = *word;
-    prev_down = tmp->down;
-    if (prev_down== NULL)
+    (*word)->next = redir->next;
+    tmp = (*word)->down;
+    if (tmp == NULL)
     {
-        prev_down = redir;
-        (*word)->next = new_next;
-        return;
+        (*word)->down = redir;
+        redir->next = NULL;
     }
-    while (prev_down->next)
-        prev_down = prev_down->next;
-    prev_down->next = redir;
-    prev_down->next->next = NULL;
-    (*word)->next = new_next;   
+    else
+    {
+        while (tmp->down)
+            tmp = tmp->down;
+        tmp->down = redir;
+        tmp->down->down = NULL;
+    }
 }
 void *tokens_v5(t_token **tokens)
 {
@@ -208,7 +206,10 @@ void *tokens_v5(t_token **tokens)
             continue;
         }
         if (temp->type == WORD && temp->next->type == WORD)
-            merge_words(&temp, &(temp->next));//this should add adress
+        {
+            merge_words(&temp, &(temp->next));
+            continue;
+        }
         temp = temp->next;
     }
 }

@@ -37,6 +37,7 @@ t_token *make_new_node(t_token_type type, char *start, size_t length)
     new->location = (t_slice){start, length};
     new->next = NULL;
 	new->up = NULL;
+    new->down = NULL;
     return (new);
 }
 
@@ -110,13 +111,29 @@ int main(int ac, char **av, char **envp)
     t_token *tmp;
     t_tree *temp;
     t_tree *tempo;
+    t_token *tempa;
     char limiter[] = {"|<>()"};
     tokens = lexer(str);
 	tokens_v2(&tokens);
     tmp = tokens;
     while (tmp)
     {
-        printf("temp type is %d\n", tmp->type);
+        printf("temp type is %d\n and value is %s\n", tmp->type, tmp->location.location);
+        if (tmp->type == WORD)
+        {
+            tempa = tmp->up;
+            while (tempa)
+            {
+                printf("---up is %s---\n", tempa->location.location);
+                tempa = tempa->up;
+            }
+            tempa = tmp->down;
+            while (tempa)
+            {
+                printf("---down is %s---\n", tempa->location.location);
+                tempa = tempa->down;
+            }
+        }
         tmp = tmp->next;
         //printf("temp type is %d\n", tmp->type);
         //tmp = tmp->next;
