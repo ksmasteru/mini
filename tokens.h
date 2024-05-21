@@ -38,6 +38,7 @@ typedef struct s_token{
     t_slice location;
     struct s_token *next;
     struct s_token *up;
+    struct s_token *down;
 }t_token;
 
 typedef struct s_tree{

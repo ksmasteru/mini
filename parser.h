@@ -30,4 +30,14 @@ t_queue *new_follower(t_queue **head, t_queue **prev, t_tree *addr);
 void pre_order_traversal(t_tree **root);
 t_stack *pop_stack(t_stack **head);
 t_stack *new_node(t_stack **head, t_tree *addr);
+void tokens_v3(t_token **tokens);
+void ft_list_add_back(t_token **head, t_token *new);
+void tokens_v2(t_token **tokens);
+void merge_all_words(t_token **head);
+t_token *tokens_v4(t_token *start);
+void *tokens_v5(t_token **tokens);
+void word_add_down(t_token **word, t_token *redir);
 #endif
+
+// tokenize simple command ---> pipe -->tokinize simple command in a recursive 
+// manner
