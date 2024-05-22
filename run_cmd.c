@@ -231,7 +231,7 @@ int manage_redirections(t_token *redirection)
     }
      return (0);
 }
-//" < infile cmd segv"
+//redirection should be applied on the process that is going to execute
 int execute_cmd(t_tree *head, int index, int len, t_data *data)
 {
      char **args;
