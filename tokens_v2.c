@@ -1,14 +1,12 @@
 #include "tokens.h"
 #include "parser.h"
 
-// check if down and up attributes store data correctly in the word token
 void merge_words(t_token **current, t_token **next)
 {
-    // change from 2 word to 1 word token
     t_token *new_next = (*next)->next;
     t_token *tmp;
 
-    tmp = (*current); //change it to next ? on up and the other nexts
+    tmp = (*current);
     while (tmp->up)
         tmp = tmp->up;
     tmp->up = *next;
@@ -16,10 +14,6 @@ void merge_words(t_token **current, t_token **next)
     (*current)->next = new_next;
 }
 
-// "hello wrold lol | daspipee | another big fucking pipe"
-
-//"will handle redirections later"
-// < file wc -w ---> make the word after < as infine the other as a signle word
 void make_redirection_token (t_token **token, t_token *next)
 {
     t_token *tmp;
@@ -35,12 +29,6 @@ void make_redirection_token (t_token **token, t_token *next)
     (*token)->type = REIDRECTION;
     (*token)->up->up = NULL;
     (*token)->next = tmp;
-   /* if (!tmp)
-        (*token)->next = tmp;
-    else
-    {
-        if (tmp->type == WORD && (*token)->prev =)) //what if word word word
-    }*/
 }
 
 void tokens_v2(t_token **tokens)
@@ -70,6 +58,7 @@ void tokens_v2(t_token **tokens)
     }
     improve_tokens(tokens);
 }
+
 void ft_list_add_back(t_token **head, t_token *new)
 {
     t_token *temp;
@@ -90,7 +79,6 @@ void ft_list_add_back(t_token **head, t_token *new)
 void merge_all_words(t_token **head)
 {
     t_token *tmp;
-    // w -> w -> w each can have ups.
     tmp = *head;
     while (tmp->next)
     {
@@ -98,76 +86,6 @@ void merge_all_words(t_token **head)
             merge_words(&tmp, &(tmp->next));
         else
             break;
-    }
-}
-// this function should check for parsing errors.
-// linked list of redirections. then add that linked list as the  
-void tokens_v3(t_token **tokens)
-{
-    t_token *temp;
-    t_token *words_head;
-    t_token *redirection_head;
-
-    temp = *tokens;
-    words_head = NULL;
-    redirection_head = NULL;
-    // the final *tokens should be of type word if there is atleast one work!
-    while (temp && temp->type != PIPE) //protect seg double while
-    {
-        if (temp->type == WORD)
-            ft_list_add_back(&words_head, temp);
-        else if (temp->type == REIDRECTION)
-            ft_list_add_back(&redirection_head, temp);
-        temp = temp->next;        
-    }
-    if (words_head == NULL)
-        *tokens = redirection_head;
-    else
-    {
-        merge_all_words(&words_head);
-        words_head->down = redirection_head;
-        *tokens = words_head;
-    }
-    if (temp != NULL)
-        ft_list_add_back(tokens, temp); //will be called by temp next
-}
-// should return linked list from a token start to pipe.
-
-// tihs function tokenize from pipe to pipe
-t_token *tokens_v4(t_token *start)
-{
-    t_token *temp;
-    t_token *words_head;
-    t_token *redirection_head;
-
-    temp = start; // start is the token after pipe.
-    if (temp == NULL)
-    {
-        //parsing error but not for the first time this iscalled
-        // should handle parsing error if  | nothing
-        return (NULL); 
-    }
-    if (temp->type == PIPE)
-        temp = temp->next; // will add pipes if this works
-    while (temp && temp->type != PIPE)
-    {
-        if (temp->type == WORD)
-            ft_list_add_back(&words_head, temp);
-        else if (temp->type == REIDRECTION)
-            ft_list_add_back(&redirection_head, temp);
-        temp = temp->next; 
-    }
-    if (words_head == NULL)
-    {
-        ft_list_add_back(&redirection_head, tokens_v4(temp));
-        return (redirection_head);
-    }
-    else
-    {
-        merge_all_words(&words_head);
-        words_head->down = redirection_head;
-        ft_list_add_back(&words_head, tokens_v4(temp));
-        return (words_head);
     }
 }
 
@@ -191,9 +109,6 @@ void word_add_down(t_token **word, t_token *redir)
         tmp->down->down = NULL;
     }
 }
-// make word the parent of redirection and swap it
-// 18 -> 1 ==> 1    printf("tmp token is %d and adress is %p", tmp->type, (*tokens));
-             //18
 
 void swap_redir_word(t_token **redir, t_token *word)
 {
@@ -210,44 +125,10 @@ void swap_redir_word(t_token **redir, t_token *word)
     {
         while (tmp_dwn->down)
             tmp_dwn = tmp_dwn->down;
-        tmp_dwn->down = temp; // first problem it should be at the top!
+        tmp_dwn->down = temp;
     }
     *redir = word;
     (*redir)->next = word_next;
-}
-void *tokens_v5(t_token **tokens)
-{
-    t_token *temp;
-// 18 -> 1 === 1
-    temp = *tokens;
-    t_token *head;
-
-    head = NULL;
-    while (temp->next)
-    {
-        if (temp->type == REIDRECTION && temp->next->type == WORD)
-        {
-            swap_redir_word(&temp, temp->next);
-            if (head == NULL)
-                head = temp;
-            continue;
-        }
-        if (temp->type == WORD && temp->next->type == REIDRECTION)
-        {
-            word_add_down(&temp, temp->next);
-            if (head == NULL)
-                head = temp;
-            continue;
-        }
-        if (temp->type == WORD && temp->next->type == WORD)
-        {
-            merge_words(&temp, &(temp->next));
-            if (head == NULL)
-                head = temp;
-            continue;
-        }
-        temp = temp->next;
-    }
 }
 // makes a linked list of words with the up atrribute.
 void merge_the_words(t_token **words_list, t_token *new_word)
@@ -368,7 +249,7 @@ void improve_tokens(t_token **tokens)
         ft_list_addback(&final_list, shunk);
         if (*tokens == NULL)
            break;
-        if ((*tokens)->type == PIPE) // ??
+        if ((*tokens)->type == PIPE)
         {
             ft_list_addback(&final_list, (*tokens));  // adding the pipe
             *tokens = (*tokens)->next;
