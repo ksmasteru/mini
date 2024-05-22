@@ -58,7 +58,7 @@ void tokens_v2(t_token **tokens)
                 make_redirection_token(&tmp, tmp->next);
                 continue;
             }
-            if (tmp->type == WORD && tmp->next->type == WORD)
+           if (tmp->type == WORD && tmp->next->type == WORD)
             {
                 merge_words(&tmp, &(tmp->next));
                 continue;
@@ -69,9 +69,6 @@ void tokens_v2(t_token **tokens)
             tmp = tmp->next;
     }
     improve_tokens(tokens);
-    //tokens_v5(tokens);
-    //tmp = *tokens;
-    //*tokens = tokens_v4(tmp);
 }
 void ft_list_add_back(t_token **head, t_token *new)
 {
@@ -257,7 +254,7 @@ void merge_the_words(t_token **words_list, t_token *new_word)
 {
     t_token *tmp;
     t_token *last_up;
-
+   // printf("added a word to list\n");
     tmp = *words_list;
     if (!tmp)
     {
@@ -272,7 +269,6 @@ void merge_the_words(t_token **words_list, t_token *new_word)
             tmp = tmp->up;
         tmp->up = new_word;
         tmp->up->up = NULL;
-
     }
 }
 // makes a linked list of redirect with the down atrribute
@@ -305,6 +301,7 @@ t_token *merge_simple_command(t_token **words_list, t_token  **redirection_list)
     if (*words_list != NULL)
     {
         (*words_list)->down = *redirection_list;
+        (*words_list)->next = NULL;
         simple_command = *words_list;
     }
     else
@@ -332,18 +329,20 @@ t_token *tokens_v6(t_token **tokens)
             break;
     }
     shunk = merge_simple_command(&words_list, &redirection_list);
-
-    *tokens = tmp;// ????
+    *tokens = tmp;//checked
     return (shunk);
 }
 // links using the next attribute
 void ft_list_addback(t_token **head, t_token *new)
 {
     t_token *tmp;
+    t_token *new_next;
 
+    if (new != NULL)
+        new_next = new->next;
     tmp = *head;
     if (!new)
-        return ;
+        return ;//hmm
     if (!tmp)
     {
         *head = new;
@@ -352,7 +351,7 @@ void ft_list_addback(t_token **head, t_token *new)
     while (tmp->next)
         tmp = tmp->next;
     tmp->next = new;
-    tmp->next->next = NULL;
+    tmp->next->next = new_next;  // idk
 }
 void improve_tokens(t_token **tokens)
 {
@@ -361,15 +360,17 @@ void improve_tokens(t_token **tokens)
     t_token *final_list;
 
     final_list = NULL;
-    tmp = *tokens;
-    while (tmp != NULL)
+    while ((*tokens) != NULL)
     {
         shunk = tokens_v6(tokens);
         ft_list_addback(&final_list, shunk);
         if (*tokens == NULL)
-            break;
-         if ((*tokens)->type == PIPE)
-            tmp = (*tokens)->next;
+           break;
+        if ((*tokens)->type == PIPE) // ??
+        {
+            ft_list_addback(&final_list, (*tokens));  // adding the pipe
+            *tokens = (*tokens)->next;
+        }
     }
-    *tokens = final_list; //should all free all used nods
+    *tokens = final_list;
 }

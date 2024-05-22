@@ -119,11 +119,11 @@ int main(int ac, char **av, char **envp)
     tmp = tokens;
     while (tmp)
     {
-        printf(" tmp type %d\n", tmp->type);
+        printf(" parent type %d\n", tmp->type);
         if (tmp->down)
             printf("  down is %d\n", tmp->down->type);
         if (tmp->up)
-            printf("  tmp up is %d\n", tmp->up->type);
+            printf("  child up is %d\n", tmp->up->type);
         tmp = tmp->next;
     }
     /*root = parser(tokens, &data);
