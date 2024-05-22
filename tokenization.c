@@ -117,7 +117,7 @@ int main(int ac, char **av, char **envp)
     tokens = lexer(str);
 	tokens_v2(&tokens);
     tmp = tokens;
-    while (tmp)
+/*    while (tmp)
     {
         printf(" parent type %d\n", tmp->type);
         if (tmp->down)
@@ -125,8 +125,8 @@ int main(int ac, char **av, char **envp)
         if (tmp->up)
             printf("  child up is %d\n", tmp->up->type);
         tmp = tmp->next;
-    }
-    /*root = parser(tokens, &data);
+    }*/
+    root = parser(tokens, &data);
     data.env = get_envp(data.envp);
     if (data.words_count > 1)
     {
@@ -140,5 +140,5 @@ int main(int ac, char **av, char **envp)
         run_cmd(&root, data.words_count - 1, data.words_count, &data);
     }
     else
-        execute_cmd(root, 0, 1, &data);*/
+        execute_cmd(root, 0, 1, &data);
 }

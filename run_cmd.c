@@ -158,7 +158,8 @@ int run_cmd_main(char **args, char *cmd, int index, t_data *data)
      int i;
 
      i = 0;
-     //waitpid(data->pids[index - 1], NULL, 0); not waiting always work
+    // if (index >= 1)/*_*/
+      //    waitpid(data->pids[index - 1], NULL, 0);// not waiting always work
      //printf("succesugly running run_cmd_main\n");
      // if there is a redirection.
      if (data->words_count != 1)
@@ -240,10 +241,12 @@ int execute_cmd(t_tree *head, int index, int len, t_data *data)
      if (!args)
           perror("args");
      cmd = get_path(data->env, args[0]);
-     if (head->token->down != NULL)
-          manage_redirections(head->token->down); //return 1 on error
      if (index == len - 1 || len == 1)
+     {
+          if (head->token->down != NULL)
+               manage_redirections(head->token->down); //return 1 on error
           return (run_cmd_main(args, cmd, index, data));
+     }
      data->pids[index] = fork();
      if (data->pids[index] == 0)
      {
@@ -253,6 +256,8 @@ int execute_cmd(t_tree *head, int index, int len, t_data *data)
                     waitpid(data->pids[i++], NULL, 0);
           }
           close_and_dup2(data->fdx, index, data->words_count);
+          if (head->token->down != NULL)
+               manage_redirections(head->token->down); //return 1 on error
           if (execve(cmd, args, data->envp) < 0)
                perror("execve");
           exit(0);
