@@ -293,7 +293,6 @@ void merge_the_redirections(t_token **redirection_list, t_token *new_red)
     }
 }
 
-// makes two lists
 t_token *merge_simple_command(t_token **words_list, t_token  **redirection_list)
 {
     t_token *simple_command;
@@ -315,6 +314,7 @@ t_token *tokens_v6(t_token **tokens)
     t_token *words_list;
     t_token *shunk;
 
+    t_token *tempo;
     redirection_list = NULL;
     words_list = NULL;
     tmp = *tokens;
@@ -329,6 +329,7 @@ t_token *tokens_v6(t_token **tokens)
             break;
     }
     shunk = merge_simple_command(&words_list, &redirection_list);
+    tempo = shunk;
     *tokens = tmp;//checked
     return (shunk);
 }
@@ -351,7 +352,7 @@ void ft_list_addback(t_token **head, t_token *new)
     while (tmp->next)
         tmp = tmp->next;
     tmp->next = new;
-    tmp->next->next = new_next;  // idk
+    tmp->next->next = new_next;
 }
 void improve_tokens(t_token **tokens)
 {
@@ -363,6 +364,7 @@ void improve_tokens(t_token **tokens)
     while ((*tokens) != NULL)
     {
         shunk = tokens_v6(tokens);
+        shunk->next = NULL;
         ft_list_addback(&final_list, shunk);
         if (*tokens == NULL)
            break;
