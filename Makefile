@@ -1,8 +1,8 @@
-NAME = TEST
+NAME = minishell
 CC = cc
 CFLAGS = -g
 
-SRCS = tokenization.c makers.c tokens_v2.c parser.c run_cmd.c get_paths.c \
+SRCS = minishell.c tokenization.c makers.c tokens_v2.c parser.c run_cmd.c get_paths.c \
 		 ft_split.c get_envp.c ft_strjoin.c
 
 OBJS = $(SRCS:.c=.o)
@@ -14,7 +14,7 @@ all : $(NAME)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME) : $(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -lreadline -o $@
 
 clean :
 	@rm -f $(OBJS)

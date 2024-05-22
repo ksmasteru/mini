@@ -60,6 +60,16 @@ void add_new_token(t_token **head , int c, char *start, size_t length)
         tmp = tmp->next;
     tmp->next = new;
 }
+int is_quotes(int c)
+{
+    printf("c is %c", c);
+    if (c == 34 || c == 39)
+    {
+        printf("found quotes !");
+        return (1);
+    }
+    return (0);
+}
 t_token  *lexer(char *str)
 {
     char *start;
@@ -74,8 +84,11 @@ t_token  *lexer(char *str)
         while (*str && (strchr(" \t\v\r", *str)))
             str = str + 1;
         start = str;
-        if(*str && strchr("|<>()", *str))
+        if (*str == 39)
+            printf("3iw");
+        if(*str && (strchr("|<>()", *str)))
         {
+            //exit(0);
             add_new_token(&head, *str, start, 1); //need more paramters.
             str = str + 1;
             start = str;
@@ -87,7 +100,7 @@ t_token  *lexer(char *str)
             length++;
         }
         if (word == 1)
-            add_new_token(&head, *str, start, length);
+            add_new_token(&head, *(str - 1), start, length);
     }
     return (head);
 }
@@ -98,13 +111,11 @@ t_token  *lexer(char *str)
 // LESS FILE CMD
 // exception like cmd > outfile word will be handled later
 
-int main(int ac, char **av, char **envp)
+int parse_cmd(char *line, char **envp)
 {
     char *str;
     t_data data;
-    if (ac != 2)
-        return (0);
-    str = av[1];
+    str = line;
     data.envp = envp;
     data.words_count = 0;
     t_token *tokens;
@@ -141,4 +152,5 @@ int main(int ac, char **av, char **envp)
     }
     else
         execute_cmd(root, 0, 1, &data);
+    exit(0);
 }
