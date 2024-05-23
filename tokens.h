@@ -79,6 +79,7 @@ t_tree *make_and_cmd(t_tree *left, t_tree *right);
 t_tree *make_or_command(t_tree *left, t_tree *right);
 t_tree *make_great_command(t_tree *left, t_tree *right);
 t_tree *make_exec_command();
+void make_quote_token(t_token **head, char **str);
 void    tokens_v2(t_token **tokens);
 void	*m_alloc(size_t __size, char todo);
 void merge_words(t_token **current, t_token **next);

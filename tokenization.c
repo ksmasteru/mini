@@ -84,8 +84,6 @@ t_token  *lexer(char *str)
         while (*str && (strchr(" \t\v\r", *str)))
             str = str + 1;
         start = str;
-        if (*str == 39)
-            printf("3iw");
         if(*str && (strchr("|<>()", *str)))
         {
             //exit(0);
@@ -93,8 +91,12 @@ t_token  *lexer(char *str)
             str = str + 1;
             start = str;
         }
+        // "hello"
+        if (*str == 34 || *str == 39)
+            make_quote_token(&head, &str);
         while (*str && !(strchr(" \t\v\r|><)(", *str)))
         {
+            //  
             word = 1;
             str = str + 1;
             length++;
@@ -105,6 +107,40 @@ t_token  *lexer(char *str)
     return (head);
 }
 
+void make_word_token(char)
+void make_quote_token(t_token **head, char **str) 
+{
+    // *str == "
+    char *start;
+    size_t lenght;
+    int qoute;
+    char *s1;
+
+    start =  *str + 1;
+    *str = *str + 1; //  ?
+    if (*(start) == '\0')
+    {
+        printf("error");
+        exit(1); //handle later
+    }
+    s1 = start;
+    lenght = 0;
+    qoute = 0;
+    while (*s1)
+    {
+        if (*s1 == 39 || *s1 == 34) //just an example
+        {
+            *str = *str + 1;
+            add_new_token(head, 1, start, lenght);
+            return ;
+        }
+        lenght++;
+        s1++;
+        *str = *str + 1;
+    }
+    printf("errori");
+    exit(1);
+}
 
 /* SEG when there is no pipe*/
 //< operations1.c wc -w
@@ -128,15 +164,22 @@ int parse_cmd(char *line, char **envp)
     tokens = lexer(str);
 	tokens_v2(&tokens);
     tmp = tokens;
-/*    while (tmp)
+    t_token *holder;
+    while (tmp)
     {
+        holder = tmp;
         printf(" parent type %d\n", tmp->type);
         if (tmp->down)
             printf("  down is %d\n", tmp->down->type);
-        if (tmp->up)
-            printf("  child up is %d\n", tmp->up->type);
+        while (holder->up)
+        {
+            printf("  child up is %d\n", holder->up->type);
+            printf("child value is %s\n", holder->up->location.location);
+            holder = holder->up;
+        }
         tmp = tmp->next;
-    }*/
+    }
+    exit(0);
     root = parser(tokens, &data);
     data.env = get_envp(data.envp);
     if (data.words_count > 1)
