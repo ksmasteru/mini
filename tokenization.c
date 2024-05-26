@@ -25,7 +25,141 @@ t_token_type decode_type(char *start, int c)
     else
         return (WORD);
 }
+char *clean_quotes_from_word(char *res, int j, int c);
+char *make_quoted_word(char **str, int c)
+{
+  int qoutes_counter;
+  char *res;
+  int str_len;
+  char *itr;
+  int i;
+  int j;
 
+  i = 0;
+  j = 0;
+  qoutes_counter = 1;
+  *str = *str + 1;
+  if (**str == '\0')
+  {
+    printf("error no closing quote found\n");
+    exit(1);
+  }
+  itr = *str;
+  str_len = strlen(itr);
+  res = (char *)malloc(sizeof(char) * (str_len + 1));
+  res[str_len] = '\0';
+  while (itr[i] != '\0')
+  {
+    if (itr[i]  == c)
+      qoutes_counter++;
+    res[j++] = itr[i++];
+    *str = *str + 1;
+    if (qoutes_counter % 2 == 0 && strchr(" \v\t\r\n|<>()", itr[i]))
+          break;
+  }
+  if (qoutes_counter % 2 == 1)
+  {
+    printf("quoted arent balanced\n");
+    exit(1);
+  }
+  res[j] = '\0';
+  return (clean_quotes_from_word(res, j, c));
+}
+
+char *clean_quotes_from_word(char *res, int j, int c)
+{
+  char *clean_word;
+  int i;
+  int x;
+
+  i = 0;
+  x = 0;
+  clean_word = (char *)malloc(sizeof(char) * (j + 1));
+  if (!clean_word)
+      return (NULL);
+  clean_word[j] = '\0';
+  while (res[i] != '\0')
+  {
+    if (res[i] != c)
+      clean_word[x++] = res[i];
+    i++;
+  }
+  clean_word[x] = '\0';
+  free(res);
+  return (clean_word);
+}
+
+char *word_till_quotes(char *str)
+{
+    int i;
+    char *res;
+    int j;
+    int len;
+
+    j = 0;
+    i = 0;
+    while (str[i])
+    {
+        if (str[i] == 34 || str[i] == 39)
+            break;
+        i++;
+    }
+    if (i == 0)
+        return (NULL);
+    res = (char *)malloc(sizeof(char) * (i + 1));
+    if (!res)
+        return (NULL);
+    len = i;
+    i = 0;
+    while (i < len)
+        res[j++] = str[i++];
+    res[j] = '\0';
+    return (res);
+}
+t_token  *lexer(char *str)
+{
+    char *start;
+    size_t length;
+    int word;
+    //"     ls    -la      | echo    -la"
+    /* skip spaces */
+    t_token *head = NULL;
+    char spaces[] = " \t\n\v\f\r";
+    char *word_before_qoutes;
+    char *new_word;
+    while (*str)
+    {
+        word = 0;
+        length = 0;
+        while (*str && (strchr(" \t\v\r", *str)))
+            str = str + 1;
+        start = str;
+        if(*str && strchr("|<>()", *str))
+        {
+            add_new_token(&head, *str, start, 1);
+            str = str + 1;
+            start = str;
+        }
+        while (*str && !(strchr(" \t\v\r|><)(", *str)))
+        {
+            if (*str == 34 || *str == 39)
+            {
+              word = 0;
+              word_before_qoutes = word_till_quotes(start);
+              printf("word before qoutes is %s\n", word_before_qoutes);
+              new_word = ft_strjoin(word_before_qoutes, make_quoted_word(&str,  *str));
+              add_new_token(&head, 1, new_word, strlen(new_word));
+              break;
+            }
+            word = 1;
+            str = str + 1;
+            length++;
+        }
+        if (word == 1)
+            add_new_token(&head, *str, start, length);
+    }
+    return (head);
+}
 t_token *make_new_node(t_token_type type, char *start, size_t length)
 {
     t_token *new;
@@ -70,77 +204,6 @@ int is_quotes(int c)
     }
     return (0);
 }
-t_token  *lexer(char *str)
-{
-    char *start;
-    size_t length;
-    int word;
-    t_token *head = NULL;
-    char spaces[] = " \t\n\v\f\r";
-    while (*str)
-    {
-        word = 0;
-        length = 0;
-        while (*str && (strchr(" \t\v\r", *str)))
-            str = str + 1;
-        start = str;
-        if(*str && (strchr("|<>()", *str)))
-        {
-            //exit(0);
-            add_new_token(&head, *str, start, 1); //need more paramters.
-            str = str + 1;
-            start = str;
-        }
-        // "hello"
-        if (*str == 34 || *str == 39)
-            make_quote_token(&head, &str);
-        while (*str && !(strchr(" \t\v\r|><)(", *str)))
-        {
-            //  
-            word = 1;
-            str = str + 1;
-            length++;
-        }
-        if (word == 1)
-            add_new_token(&head, *(str - 1), start, length);
-    }
-    return (head);
-}
-
-void make_word_token(char)
-void make_quote_token(t_token **head, char **str) 
-{
-    // *str == "
-    char *start;
-    size_t lenght;
-    int qoute;
-    char *s1;
-
-    start =  *str + 1;
-    *str = *str + 1; //  ?
-    if (*(start) == '\0')
-    {
-        printf("error");
-        exit(1); //handle later
-    }
-    s1 = start;
-    lenght = 0;
-    qoute = 0;
-    while (*s1)
-    {
-        if (*s1 == 39 || *s1 == 34) //just an example
-        {
-            *str = *str + 1;
-            add_new_token(head, 1, start, lenght);
-            return ;
-        }
-        lenght++;
-        s1++;
-        *str = *str + 1;
-    }
-    printf("errori");
-    exit(1);
-}
 
 /* SEG when there is no pipe*/
 //< operations1.c wc -w
@@ -165,7 +228,8 @@ int parse_cmd(char *line, char **envp)
 	tokens_v2(&tokens);
     tmp = tokens;
     t_token *holder;
-    while (tmp)
+    // uncomment to test tokens
+   /* while (tmp)
     {
         holder = tmp;
         printf(" parent type %d\n", tmp->type);
@@ -179,7 +243,7 @@ int parse_cmd(char *line, char **envp)
         }
         tmp = tmp->next;
     }
-    exit(0);
+    exit(0);*/
     root = parser(tokens, &data);
     data.env = get_envp(data.envp);
     if (data.words_count > 1)
