@@ -46,8 +46,9 @@ t_token *merge_simple_command(t_token **words_list, t_token  **redirection_list)
 void merge_the_redirections(t_token **redirection_list, t_token *new_red);
 void merge_the_words(t_token **words_list, t_token *new_word);
 char *ft_strnchrs(char *str, int c, size_t len);
-size_t make_word_token(t_token **head, char *start);
 size_t make_word_with_quotes(t_token **head, char *start);
+char *make_quoted_word(char **str, int c);
+char *clean_quotes_from_word(char *res, int j, int c);
 #endif
 
 // tokenize simple command ---> pipe -->tokinize simple command in a recursive 

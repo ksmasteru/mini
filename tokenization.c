@@ -121,8 +121,6 @@ t_token  *lexer(char *str)
     char *start;
     size_t length;
     int word;
-    //"     ls    -la      | echo    -la"
-    /* skip spaces */
     t_token *head = NULL;
     char spaces[] = " \t\n\v\f\r";
     char *word_before_qoutes;
@@ -146,7 +144,6 @@ t_token  *lexer(char *str)
             {
               word = 0;
               word_before_qoutes = word_till_quotes(start);
-              printf("word before qoutes is %s\n", word_before_qoutes);
               new_word = ft_strjoin(word_before_qoutes, make_quoted_word(&str,  *str));
               add_new_token(&head, 1, new_word, strlen(new_word));
               break;
@@ -194,22 +191,6 @@ void add_new_token(t_token **head , int c, char *start, size_t length)
         tmp = tmp->next;
     tmp->next = new;
 }
-int is_quotes(int c)
-{
-    printf("c is %c", c);
-    if (c == 34 || c == 39)
-    {
-        printf("found quotes !");
-        return (1);
-    }
-    return (0);
-}
-
-/* SEG when there is no pipe*/
-//< operations1.c wc -w
-// LESS FILE CMD
-// exception like cmd > outfile word will be handled later
-
 int parse_cmd(char *line, char **envp)
 {
     char *str;
